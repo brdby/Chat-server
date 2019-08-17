@@ -1,4 +1,4 @@
-package com.brdby.entity;
+package com.beardby.entity;
 
 import java.io.*;
 import java.net.Socket;
@@ -22,7 +22,6 @@ public class User {
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         chatList = new ArrayList<>();
         chatList.add(chat);
-        chat.addUsers(this);
     }
 
 

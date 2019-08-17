@@ -1,9 +1,8 @@
-package com.brdby.entity;
+package com.beardby.entity;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Chat {
     private static int nextID = 0;
@@ -20,9 +19,13 @@ public class Chat {
         this.users.addAll(Arrays.asList(users));
     }
 
-    public synchronized boolean sendToAll(User user, String msg) throws IOException {
-        for (User u : users) u.writeMsg(user.getName() + "[id-" + user.getID() + "]", msg);
-        return true;
+    public ArrayList<User> getUsers() {
+        return users;
+    }
+
+    public synchronized void sendToAll(Message msg) throws IOException {
+        User user = msg.getUser();
+        for (User u : users) u.writeMsg(user.getName() + "[id-" + user.getID() + "]", msg.getMessage());
     }
 
     public int getID() {
