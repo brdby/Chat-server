@@ -1,5 +1,7 @@
 package com.beardby.entity;
 
+import java.io.IOException;
+
 public class Message {
     private Chat chat;
     private User user;
@@ -21,5 +23,9 @@ public class Message {
 
     public String getMessage() {
         return message;
+    }
+
+    public void send() throws IOException {
+        chat.sendToAll(this);
     }
 }

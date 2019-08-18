@@ -1,5 +1,9 @@
 package com.beardby.entity;
 
+import com.beardby.util.JSONChatParser;
+import com.beardby.util.UserDisconnectedException;
+
+import java.beans.IntrospectionException;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -37,8 +41,30 @@ public class User {
         return ID;
     }
 
-    public String readMsg() throws IOException {
-        return  in.readLine();
+    public Message readMsg() throws IOException, UserDisconnectedException {
+        String raw = in.readLine();
+
+        //Check if user disconnected not safe
+        if (raw == null || !this.isConnected())
+            throw new UserDisconnectedException("User " + this.toString() + "disconnected");
+        Integer chatID = JSONChatParser.getChatID(raw);
+        String messageText = JSONChatParser.getMessageText(raw);
+
+        //Check for error with JSON
+        if (chatID == null || messageText == null) {
+            System.out.println("Cannot read JSON from user-" + this.toString());
+            return null;
+        }
+        else {
+            //Trying to find chat with chatID from JSON
+            for (Chat c : chatList) {
+                if (c.getID() == chatID) {
+                    return new Message(c, this, messageText);
+                }
+            }
+            System.out.println("Cannot find chat with id " + chatID + " user-" + this.toString());
+            return null;
+        }
     }
 
     public synchronized void writeMsg(String username, String msg) throws IOException {
@@ -54,5 +80,8 @@ public class User {
         return socket.isConnected();
     }
 
-
+    @Override
+    public String toString() {
+        return name + "[id-" + ID + "]";
+    }
 }

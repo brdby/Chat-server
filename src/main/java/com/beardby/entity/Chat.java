@@ -19,13 +19,9 @@ public class Chat {
         this.users.addAll(Arrays.asList(users));
     }
 
-    public ArrayList<User> getUsers() {
-        return users;
-    }
-
     public synchronized void sendToAll(Message msg) throws IOException {
         User user = msg.getUser();
-        for (User u : users) u.writeMsg(user.getName() + "[id-" + user.getID() + "]", msg.getMessage());
+        for (User u : users) u.writeMsg(user.toString(), msg.getMessage());
     }
 
     public int getID() {
