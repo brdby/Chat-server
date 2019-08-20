@@ -1,5 +1,6 @@
 package com.beardby.entity;
 
+import com.beardby.Main;
 import com.beardby.util.JSONChatParser;
 import com.beardby.util.UserDisconnectedException;
 
@@ -47,8 +48,17 @@ public class User {
         //Check if user disconnected not safe
         if (raw == null || !this.isConnected())
             throw new UserDisconnectedException("User " + this.toString() + "disconnected");
+
+        //get everything from json
         Integer chatID = JSONChatParser.getChatID(raw);
         String messageText = JSONChatParser.getMessageText(raw);
+        String commandName = JSONChatParser.getCommand(raw);
+        String[] commandSpecifier = JSONChatParser.getCommandSpecifier(raw);
+
+        //If there is a command, execute it
+        if (commandName != null){
+            Main.execCommand(commandName, this, commandSpecifier);
+        }
 
         //Check for error with JSON
         if (chatID == null || messageText == null) {
@@ -67,9 +77,16 @@ public class User {
         }
     }
 
-    public synchronized void writeMsg(String username, String msg) throws IOException {
-        out.write(username + ":" + msg + "\n");
+    public synchronized void sendMsg(Message message) throws IOException {
+        out.write(JSONChatParser.createJSONMessage(message.getChat(), message.getUser(), message.getMessage()));
         out.flush();
+    }
+
+    public synchronized void sendMsg(String msg) throws IOException {
+        for (Chat c : chatList){
+            out.write(JSONChatParser.createJSONMessage(c, msg));
+            out.flush();
+        }
     }
 
     public ArrayList<Chat> getChatList() {

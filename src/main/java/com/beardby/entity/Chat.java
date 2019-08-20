@@ -20,8 +20,7 @@ public class Chat {
     }
 
     public synchronized void sendToAll(Message msg) throws IOException {
-        User user = msg.getUser();
-        for (User u : users) u.writeMsg(user.toString(), msg.getMessage());
+        for (User u : users) u.sendMsg(msg);
     }
 
     public int getID() {
